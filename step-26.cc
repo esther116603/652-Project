@@ -117,21 +117,13 @@ namespace Step26
     AssertIndexRange(component, 1);
     Assert(dim == 2, ExcNotImplemented());
 
-    const double time = this->get_time();
-    const double point_within_period =
-      (time / period - std::floor(time / period));
+    const double r   = std::sqrt(p[0]*p[0] + p[1]*p[1]);
+    const double phi = std::atan2(p[1],p[0]);
 
-    if ((point_within_period >= 0.0) && (point_within_period <= 0.2))
+    if (r>0.5 && r<0.7)
       {
-        if ((p[0] > 0.5) && (p[1] > -0.5))
-          return 1;
-        else
-          return 0;
-      }
-    else if ((point_within_period >= 0.5) && (point_within_period <= 0.7))
-      {
-        if ((p[0] > -0.5) && (p[1] > 0.5))
-          return 1;
+        if (phi>10*this->get_time() && phi<10*this->get_time()+0.3)
+          return 1000;
         else
           return 0;
       }
@@ -296,10 +288,10 @@ namespace Step26
   template <int dim>
   void HeatEquation<dim>::run()
   {
-    const unsigned int initial_global_refinement       = 2;
+    const unsigned int initial_global_refinement       = 3;
     const unsigned int n_adaptive_pre_refinement_steps = 4;
 
-    GridGenerator::hyper_L(triangulation);
+    GridGenerator::hyper_cube(triangulation, -1, 1);
     triangulation.refine_global(initial_global_refinement);
 
     setup_system();
